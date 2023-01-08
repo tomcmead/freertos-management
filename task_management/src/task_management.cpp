@@ -18,13 +18,13 @@
 * @return None
 *****************************************************************************/
 void taskCount1(void *pvParameters) {
-  int count1=0;
+  uint16_t uCount1=0;
   char *pcTaskName = (char*) pvParameters;
 
   for( ;; ){
     Serial.print(pcTaskName);
     Serial.print(" Count: ");
-    Serial.println(count1++);
+    Serial.println(uCount1++);
 
     // vTaskDelay() is number of tick interrupts calling task will remain in Blocked state before tranisitioning to Ready state.
     vTaskDelay(1000 / portTICK_PERIOD_MS); 
@@ -38,7 +38,7 @@ void taskCount1(void *pvParameters) {
 *****************************************************************************/
 void taskCount2(void *pvParameters) {
   char *pcTaskName = (char*) pvParameters;
-  int count2 = 0;
+  uint16_t uCount2 = 0;
   const TickType_t xDelay2s = pdMS_TO_TICKS(2000);
 
   // xLastWakeTime initialised with current tick count, automatically updated within vTaskDelayUntil()
@@ -47,12 +47,27 @@ void taskCount2(void *pvParameters) {
   for( ;; ){
     Serial.print(pcTaskName);
     Serial.print(" Count: ");
-    Serial.println(count2++);
+    Serial.println(uCount2++);
 
     /* vTaskDelayUntil() specifies exact tick count value task should be moved Blocked into Ready state
     used when API function requires fixed execution period as calling task is unblocked is abosolute not relative*/
     vTaskDelayUntil(&xLastWakeTime, xDelay2s);
   }
+}
+
+
+/*************************************************************************//**
+* @brief Idle hook functions MUST be called vApplicationIdleHook(), take no 
+*        parameters, return void. Example counter.
+* @param void 
+* @return None
+*****************************************************************************/
+void vApplicationIdleHook(void)
+{
+  static volatile uint32_t ulIdleCycleCount = 0UL;  // Declare a variable that will be incremented by the hook function
+  if(!(ulIdleCycleCount % 10000))
+    Serial.println(ulIdleCycleCount);
+  ulIdleCycleCount++;
 }
 
 void setup() {
