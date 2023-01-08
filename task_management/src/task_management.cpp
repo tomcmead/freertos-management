@@ -16,16 +16,14 @@ TaskHandle_t xTask1Handle = NULL;
   public functions
 ----------------------------------------------------------------------------*/
 /*************************************************************************//**
-* @brief 1 second counter
+* @brief 1 second counter, task deletes itself after 10s
 * @param void *pvParameters pointer value for task parameters
 * @return None
 *****************************************************************************/
 void vTask1Count(void *pvParameters) {
   uint16_t uCount1=0;
   char *pcTaskName = (char*) pvParameters; // get char parameters
-  UBaseType_t uxPriority = uxTaskPriorityGet(NULL); /* query the priority at which this task is running
-                                                      passing in NULL means return the calling task’s priority*/
-
+    
   for( ;; ){
     Serial.print(pcTaskName);
     Serial.print(" Count: ");
@@ -34,13 +32,15 @@ void vTask1Count(void *pvParameters) {
     // vTaskDelay() is number of tick interrupts calling task will remain in Blocked state before tranisitioning to Ready state
     vTaskDelay(1000 / portTICK_PERIOD_MS); 
 
-    // Set task1 
-    vTaskPrioritySet(NULL, (uxPriority - 2));
+    /* only memory allocated to a task by the kernel itself will be freed automatically when the task is deleted 
+       any memory or other resource that the implementation of the task allocated must be freed explicitly */
+    if(uCount1 == 10)
+      vTaskDelete(xTask1Handle);
   }
 }
 
 /*************************************************************************//**
-* @brief 2 second counter
+* @brief 2 second counter, also increase task1 priority
 * @param void *pvParameters pointer value for task parameters
 * @return None
 *****************************************************************************/
@@ -54,6 +54,8 @@ void vTask2Count(void *pvParameters) {
   // xLastWakeTime initialised with current tick count, automatically updated within vTaskDelayUntil()
   TickType_t xLastWakeTime = xTaskGetTickCount();
 
+  // increase task1 priority to 1 greater than task2 priority
+  vTaskPrioritySet(xTask1Handle, (uxPriority + 1));
   for( ;; ){
     Serial.print(pcTaskName);
     Serial.print(" Count: ");
@@ -61,10 +63,7 @@ void vTask2Count(void *pvParameters) {
 
     /* vTaskDelayUntil() specifies exact tick count value task should be moved Blocked into Ready state
     used when API function requires fixed execution period as calling task is unblocked is abosolute not relative*/
-    vTaskDelayUntil(&xLastWakeTime, xDelay2s);
-
-    // Increase Task1 priority
-    vTaskPrioritySet(xTask1Handle, (uxPriority + 1));
+    vTaskDelayUntil(&xLastWakeTime, xDelay2s);   
   }
 }
 
