@@ -6,9 +6,15 @@
 #define _TASK_MANAGEMENT_H
 
 /*----------------------------------------------------------------------------
+  nested include files
+----------------------------------------------------------------------------*/
+#include <Arduino_FreeRTOS.h>
+#include <Arduino.h>
+
+/*----------------------------------------------------------------------------
   prototypes
 ----------------------------------------------------------------------------*/
-void taskCount1( void *pvParameters );
-void taskCount2( void *pvParameters );
+void vTask1Count( void *pvParameters );
+void vTask2Count( void *pvParameters );
 
 #endif // _TASK_MANAGEMENT_H
