@@ -25,7 +25,9 @@ void taskCount1(void *pvParameters) {
     Serial.print(pcTaskName);
     Serial.print(" Count: ");
     Serial.println(count1++);
-    vTaskDelay( 1000 / portTICK_PERIOD_MS ); 
+
+    // vTaskDelay() is number of tick interrupts calling task will remain in Blocked state before tranisitioning to Ready state.
+    vTaskDelay(1000 / portTICK_PERIOD_MS); 
   }
 }
 
@@ -35,14 +37,21 @@ void taskCount1(void *pvParameters) {
 * @return None
 *****************************************************************************/
 void taskCount2(void *pvParameters) {
-  int count2=0;
   char *pcTaskName = (char*) pvParameters;
+  int count2 = 0;
+  const TickType_t xDelay2s = pdMS_TO_TICKS(2000);
+
+  // xLastWakeTime initialised with current tick count, automatically updated within vTaskDelayUntil()
+  TickType_t xLastWakeTime = xTaskGetTickCount();
 
   for( ;; ){
     Serial.print(pcTaskName);
     Serial.print(" Count: ");
     Serial.println(count2++);
-    vTaskDelay( 2000 / portTICK_PERIOD_MS ); 
+
+    /* vTaskDelayUntil() specifies exact tick count value task should be moved Blocked into Ready state
+    used when API function requires fixed execution period as calling task is unblocked is abosolute not relative*/
+    vTaskDelayUntil(&xLastWakeTime, xDelay2s);
   }
 }
 
