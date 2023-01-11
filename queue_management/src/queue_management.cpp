@@ -10,7 +10,8 @@
 /*----------------------------------------------------------------------------
   global variables
 ----------------------------------------------------------------------------*/
-static QueueHandle_t xQueue;
+static QueueHandle_t xQueue = xQueueCreate(5,               // UBaseType_t uxQueueLength
+                                          sizeof(int32_t)); // UBaseType_t uxItemSize
 
 /*----------------------------------------------------------------------------
   public functions
@@ -25,15 +26,19 @@ void vSenderTask(void *pvParameters){
   int32_t lValueToSend = (int32_t) pvParameters;  // cast parameter to required type
 
   for( ;; ) {
-    // Send value to queue
+    // Send value to queue equivalent to xQueueSend()
     xStatus = xQueueSendToBack(xQueue,        // QueueHandle_t xQueue - queue data is being sent
                                &lValueToSend, // const void *pvItemToQueue - address of data to be sent 
                                0);            // TickType_t xTicksToWait - time task kept in Blocked state to wait for
                                               // space to become available on the queue should the queue be full
 
     // Full queue generates error
-    if( xStatus != pdPASS )
+    if(xStatus != pdPASS)  // returns either pdPASS or errQUEUE_FULL
       Serial.println( "Could not send to the queue\n" );
+
+    if(xQueueSendToFront(xQueue, &lValueToSend, 0) != pdPASS) 
+      Serial.println( "Could not send to the queue\n" );
+
     vTaskDelay(10000 / portTICK_PERIOD_MS);
   }
 }
@@ -57,7 +62,7 @@ void vReceiverTask( void *pvParameters ){
                             &lReceivedValue, //void *pvBuffer - buffer for received data
                             xTicksToWait);   // TickType_t xTicksToWait - - time task kept in Blocked state to wait for
                                              // data to become available on the queue should the queue be empty
-    if( xStatus == pdPASS ){
+    if(xStatus == pdPASS){  // returns pdPASS or errQUEUE_EMPTY
       Serial.print("Received = ");   // Data successfully received from queue
       Serial.println(lReceivedValue);
     }
