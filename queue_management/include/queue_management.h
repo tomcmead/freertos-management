@@ -24,7 +24,8 @@ void vReceiverTask(void *pvParameters);
 // Define an enumerated type used to identify the source of the data 
 typedef enum{
   eSender1,
-  eSender2
+  eSender2,
+  eSender3
 } DataSource_t;
 
 // Define the structure type that will be passed on the queue
