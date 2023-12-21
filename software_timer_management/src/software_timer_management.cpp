@@ -31,6 +31,11 @@ static void prvTimerCallback(TimerHandle_t xTimer){
     Serial.println(ulExecutionCount);
 
     if(ulExecutionCount == 5){
+        xTimerChangePeriod(xTimer,                     // TimerHandle_t xTimer
+                           AUTO_RELOAD_TIMER_PERIOD*2, // TickType_t xNewTimerPeriodInTicks
+                           0);                         // TickType_t xTicksToWait
+    }
+    if(ulExecutionCount == 10){
         xTimerStop(xTimer, 0);
     }
 }

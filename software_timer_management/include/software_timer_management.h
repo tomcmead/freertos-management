@@ -15,7 +15,7 @@
   manifest constants
 ----------------------------------------------------------------------------*/
 #define ONE_SHOT_TIMER_PERIOD pdMS_TO_TICKS(5000)
-#define AUTO_RELOAD_TIMER_PERIOD pdMS_TO_TICKS(500)
+#define AUTO_RELOAD_TIMER_PERIOD pdMS_TO_TICKS(1000)
 
 /*----------------------------------------------------------------------------
   prototypes
