@@ -17,7 +17,7 @@
 * @param TimerHandle_t xTimer timer handler
 * @return None
 *****************************************************************************/
-static void prvTimerCallback(TimerHandle_t xTimer){
+void prvTimerCallback(TimerHandle_t xTimer){
     static uint32_t ulExecutionCount = 0;
     ulExecutionCount++;
 
@@ -30,12 +30,20 @@ static void prvTimerCallback(TimerHandle_t xTimer){
     Serial.print(" callback: ");
     Serial.println(ulExecutionCount);
 
-    if(ulExecutionCount == 5){
+    if(pcTimerName == "OneShot"){
+        xTimerReset(xTimer,                 //TimerHandle_t xTimer,
+                    ONE_SHOT_TIMER_PERIOD); // TickType_t xBlockTime
+        Serial.print(pcTimerName);
+        Serial.println(" timer reset");
+    }
+    if(ulExecutionCount == 4){
         xTimerChangePeriod(xTimer,                     // TimerHandle_t xTimer
                            AUTO_RELOAD_TIMER_PERIOD*2, // TickType_t xNewTimerPeriodInTicks
                            0);                         // TickType_t xTicksToWait
     }
-    if(ulExecutionCount == 10){
+    else if(ulExecutionCount > 10){
+        Serial.print(pcTimerName);
+        Serial.println(" timer stopped");
         xTimerStop(xTimer, 0);
     }
 }
