@@ -12,8 +12,8 @@
   public functions
 ----------------------------------------------------------------------------*/
 /*************************************************************************//**
-* @brief Auto-reload timer will re-start itself each time it expires, 
-*        resulting in periodic execution of its callback function.
+* @brief Timer callback resets OneShot timer, doubles period of AutoReload
+*        timer after 4 callbacks, stops time after 10 callbacks
 * @param TimerHandle_t xTimer timer handler
 * @return None
 *****************************************************************************/
@@ -48,6 +48,11 @@ void prvTimerCallback(TimerHandle_t xTimer){
     }
 }
 
+/*************************************************************************//**
+* @brief Create and start a AutoLoad and OneShot timer
+* @param void
+* @return int
+*****************************************************************************/
 int main( void ){
     Serial.begin(9600);
 
